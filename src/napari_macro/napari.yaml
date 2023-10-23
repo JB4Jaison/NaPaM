@@ -1,0 +1,52 @@
+name: napari-macro
+display_name: Macro Tool
+# use 'hidden' to remove plugin from napari hub search results
+visibility: public
+# see https://napari.org/stable/plugins/manifest.html for valid categories
+categories: ["Annotation", "Segmentation", "Acquisition"]
+contributions:
+  commands:
+    - id: napari-macro.get_reader
+      python_name: napari_macro._reader:napari_get_reader
+      title: Open data with Macro Tool
+    - id: napari-macro.write_multiple
+      python_name: napari_macro._writer:write_multiple
+      title: Save multi-layer data with Macro Tool
+    - id: napari-macro.write_single_image
+      python_name: napari_macro._writer:write_single_image
+      title: Save image data with Macro Tool
+    - id: napari-macro.make_sample_data
+      python_name: napari_macro._sample_data:make_sample_data
+      title: Load sample data from Macro Tool
+    - id: napari-macro.make_qwidget
+      python_name: napari_macro._widget:ExampleQWidget
+      title: Make example QWidget
+    - id: napari-macro.make_magic_widget
+      python_name: napari_macro._widget:example_magic_widget
+      title: Make example magic widget
+    - id: napari-macro.make_func_widget
+      python_name: napari_macro._widget:example_function_widget
+      title: Make example function widget
+  readers:
+    - command: napari-macro.get_reader
+      accepts_directories: false
+      filename_patterns: ['*.npy']
+  writers:
+    - command: napari-macro.write_multiple
+      layer_types: ['image*','labels*']
+      filename_extensions: []
+    - command: napari-macro.write_single_image
+      layer_types: ['image']
+      filename_extensions: ['.npy']
+  sample_data:
+    - command: napari-macro.make_sample_data
+      display_name: Macro Tool
+      key: unique_id.1
+  widgets:
+    - command: napari-macro.make_qwidget
+      display_name: Example QWidget
+    - command: napari-macro.make_magic_widget
+      display_name: Example Magic Widget
+    - command: napari-macro.make_func_widget
+      autogenerate: true
+      display_name: Example Function Widget
