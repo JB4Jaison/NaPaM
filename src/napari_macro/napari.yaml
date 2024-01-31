@@ -18,15 +18,9 @@ contributions:
     - id: napari-macro.make_sample_data
       python_name: napari_macro._sample_data:make_sample_data
       title: Load sample data from Macro Tool
-    - id: napari-macro.make_qwidget
-      python_name: napari_macro._widget:ExampleQWidget
-      title: Make example QWidget
-    - id: napari-macro.make_magic_widget
-      python_name: napari_macro._widget:example_magic_widget
-      title: Make example magic widget
-    - id: napari-macro.make_func_widget
-      python_name: napari_macro._widget:example_function_widget
-      title: Make example function widget
+    - id: napari-macro.make_macro_widget
+      python_name: napari_macro._widget:MacroWidget
+      title: Make Macro Widget
   readers:
     - command: napari-macro.get_reader
       accepts_directories: false
@@ -43,10 +37,5 @@ contributions:
       display_name: Macro Tool
       key: unique_id.1
   widgets:
-    - command: napari-macro.make_qwidget
-      display_name: Example QWidget
-    - command: napari-macro.make_magic_widget
-      display_name: Example Magic Widget
-    - command: napari-macro.make_func_widget
-      autogenerate: true
-      display_name: Example Function Widget
+    - command: napari-macro.make_macro_widget
+      display_name: Macro
