@@ -1,11 +1,11 @@
-# napari-macro
+# NaPaM
 
-[![License BSD-3](https://img.shields.io/pypi/l/napari-macro.svg?color=green)](https://github.com/githubuser/napari-macro/raw/main/LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/napari-macro.svg?color=green)](https://pypi.org/project/napari-macro)
-[![Python Version](https://img.shields.io/pypi/pyversions/napari-macro.svg?color=green)](https://python.org)
-[![tests](https://github.com/githubuser/napari-macro/workflows/tests/badge.svg)](https://github.com/githubuser/napari-macro/actions)
-[![codecov](https://codecov.io/gh/githubuser/napari-macro/branch/main/graph/badge.svg)](https://codecov.io/gh/githubuser/napari-macro)
-[![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-macro)](https://napari-hub.org/plugins/napari-macro)
+[![License BSD-3](https://img.shields.io/pypi/l/NaPaM.svg?color=green)](https://github.com/githubuser/NaPaM/raw/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/NaPaM.svg?color=green)](https://pypi.org/project/NaPaM)
+[![Python Version](https://img.shields.io/pypi/pyversions/NaPaM.svg?color=green)](https://python.org)
+[![tests](https://github.com/githubuser/NaPaM/workflows/tests/badge.svg)](https://github.com/githubuser/NaPaM/actions)
+[![codecov](https://codecov.io/gh/githubuser/NaPaM/branch/main/graph/badge.svg)](https://codecov.io/gh/githubuser/NaPaM)
+[![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/NaPaM)](https://napari-hub.org/plugins/NaPaM)
 
 A plugin that allows you to run macros on the images for any kind of image processing.
 
@@ -23,9 +23,9 @@ https://napari.org/stable/plugins/index.html
 
 ## Installation
 
-You can install `napari-macro` via [pip]:
+You can install `NaPaM` via [pip]:
 
-    pip install napari-macro
+    pip install NaPaM
 
 
 
@@ -38,7 +38,7 @@ the coverage at least stays the same before you submit a pull request.
 ## License
 
 Distributed under the terms of the [BSD-3] license,
-"napari-macro" is free and open source software
+"NaPaM" is free and open source software
 
 ## Issues
 
