@@ -10,38 +10,52 @@ from typing import TYPE_CHECKING
 
 from napari.layers import Image, Labels, Shapes
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton, QLabel, QLineEdit, QHBoxLayout, QCheckBox
-from napari.qt.threading import thread_worker
-from qtpy.QtCore import QTimer
-
-from enum import Enum
-from functools import partial
 import numpy as np
-from magicgui import magic_factory
 from napari.layers import Labels
 from copy import deepcopy
 from matplotlib.path import Path
+import time
+import datetime
 
-from skimage.filters import (
-    threshold_isodata,
-    threshold_li,
-    threshold_otsu,
-    threshold_triangle,
-    threshold_yen,
-)
-from skimage.measure import label
 import napari
 
-
 # Create a function to process the image based on the user's code
-def process_image(image, code):
+def process_image(image:np.ndarray, code:str):
+    '''
+    Process the image based on the user's code
+
+    Parameters
+    ----------
+    image : np.ndarray
+        The image to be processed
+    code : str
+        The code to be executed on the image
+
+    Returns
+    -------
+    np.ndarray
+        The processed image
+
+    '''
+
+    if image is None:
+        return "Error: No image provided"
+    
+    if code is None:
+        return "Error: No code provided"
+    
     try:
         print("RUNNING USER MACRO ...")
         # Create a namespace for the code to run in
         namespace = {'image': image, 'result': None}
         
+        # Time the execution of the code
+        start = time.time()
         # Execute the user's code within the namespace
         exec(code, namespace)
-        
+
+        end = time.time()
+        print(f"Time Elapsed For Completion - {str(datetime.timedelta(seconds=end - start))}")
         # Retrieve the result from the namespace
         result = namespace.get('result', None)
         # print(result, type(result))
@@ -150,16 +164,16 @@ class MacroWidget(QWidget):
                 # Interesect the given shape with the image selected
                 roi_polygon = self.intersect_mask_with_image(selected_shape_layer.data[0], image_shape)
 
-                print(len(roi_polygon))
-                print(type(roi_polygon))
+                # print(len(roi_polygon))
+                # print(type(roi_polygon))
                 # Create the mask with the same shape as the image
 
                 # Do it manually instead of doing it via the APIs
                 # roi_mask = selected_shape_layer.to_masks(roi_polygon)
                 roi_mask = self.roi_to_mask(roi_polygon, image_shape)
 
-                print(roi_mask)
-                print(roi_mask.shape)
+                # print(roi_mask)
+                # print(roi_mask.shape)
   
                 
         elif selected_shape_layer is None and self.roi_checkbox.isChecked():
@@ -168,7 +182,12 @@ class MacroWidget(QWidget):
 
 
         if isinstance(selected_layer, (Image)):
-            result_roi = process_image(image * roi_mask, code)
+
+             # Get the original image within the ROI space
+            original_ROI_image = image * roi_mask
+            ROI_copy = deepcopy(original_ROI_image)
+
+            result_roi = process_image(ROI_copy, code)
             
 
             if isinstance(result_roi,(list, np.ndarray)):
@@ -179,7 +198,7 @@ class MacroWidget(QWidget):
                     # image_viewer.add_labels(image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text()+" Preview")
 
                     for stack in range(temp_image.shape[0]):
-                        if self.image_has_changed(result_roi[stack]):
+                        if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
                             # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
                             temp_image[stack] *= (1 - roi_mask)  # Set the ROI area to 0
                             temp_image[stack] = temp_image[stack].astype(np.int32)
@@ -337,7 +356,7 @@ class MacroWidget(QWidget):
         bool
             True if the images are different, False otherwise
         '''
-        print("Difference between the two images: ",(image - comparison_image) )
+        print("Difference between the two images: ", (image - comparison_image) )
         return np.sum(image - comparison_image) != 0
 
 

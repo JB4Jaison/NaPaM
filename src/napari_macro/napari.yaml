@@ -1,5 +1,5 @@
 name: napari-macro
-display_name: Macro Tool
+display_name: NaPaM
 # use 'hidden' to remove plugin from napari hub search results
 visibility: public
 # see https://napari.org/stable/plugins/manifest.html for valid categories

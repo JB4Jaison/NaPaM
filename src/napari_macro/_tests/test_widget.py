@@ -1,36 +1,47 @@
+import pytest
+from .._widget import process_image, MacroWidget
+from napari import Viewer
+from qtpy.QtWidgets import QApplication
 import numpy as np
+from qtpy.QtCore import Qt
 
-from napari_macro import ExampleQWidget, example_magic_widget
+@pytest.fixture
+def app(qtbot):
+    return QApplication.instance() or QApplication([])
 
+@pytest.fixture
+def viewer():
+    return Viewer()
 
-# make_napari_viewer is a pytest fixture that returns a napari viewer object
-# capsys is a pytest fixture that captures stdout and stderr output streams
-def test_example_q_widget(make_napari_viewer, capsys):
-    # make viewer and add an image layer using our fixture
-    viewer = make_napari_viewer()
-    viewer.add_image(np.random.random((100, 100)))
+@pytest.fixture
+def macro_widget(viewer, qtbot):
+    widget = MacroWidget(viewer)
+    qtbot.addWidget(widget)
+    return widget
 
-    # create our widget, passing in the viewer
-    my_widget = ExampleQWidget(viewer)
+#TODO: Create mock class for the GUI and test the GUI elements
 
-    # call our widget method
-    my_widget._on_click()
+def test_process_image():
+    # Example test for process_image
+    image = np.zeros((10, 10))
+    code = "result = image.copy()"
+    result = process_image(image, code)
+    assert np.array_equal(result, image), "The processed image should match the original."
 
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == "napari has 1 layers\n"
+def test_macro_widget_image_change_detection(macro_widget, viewer, qtbot):
+    # Testing the widget's ability to detect changes in the image
+    initial_image = np.zeros((10, 10))
+    viewer.add_image(initial_image)
+    changed_image = initial_image.copy()
+    changed_image[5, 5] = 1  # Modify the image
+    viewer.layers[0].data = changed_image
+    # Trigger any function or check that should detect this change
+    assert macro_widget.image_has_changed(initial_image, changed_image), "Widget should detect the image change."
 
-
-def test_example_magic_widget(make_napari_viewer, capsys):
-    viewer = make_napari_viewer()
-    layer = viewer.add_image(np.random.random((100, 100)))
-
-    # this time, our widget will be a MagicFactory or FunctionGui instance
-    my_widget = example_magic_widget()
-
-    # if we "call" this object, it'll execute our function
-    my_widget(viewer.layers[0])
-
-    # read captured output and check that it's as we expected
-    captured = capsys.readouterr()
-    assert captured.out == f"you have selected {layer}\n"
+def test_image_processing_function():
+    # Placeholder for testing a specific image processing function
+    image = np.zeros((10, 10))
+    # Modify the image or apply a processing function
+    processed_image = image  # Replace with actual processing
+    assert processed_image is not None, "Processed image should not be None."
+    # Add more assertions based on expected behavior
