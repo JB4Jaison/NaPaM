@@ -1,4 +1,4 @@
-name: NaPaM
+name: napam
 display_name: NaPaM
 # use 'hidden' to remove plugin from napari hub search results
 visibility: public
@@ -6,36 +6,36 @@ visibility: public
 categories: ["Annotation", "Segmentation", "Acquisition"]
 contributions:
   commands:
-    - id: NaPaM.get_reader
-      python_name: napari_macro._reader:napari_get_reader
+    - id: napam.get_reader
+      python_name: napam._reader:napari_get_reader
       title: Open data with Macro Tool
-    - id: NaPaM.write_multiple
-      python_name: napari_macro._writer:write_multiple
+    - id: napam.write_multiple
+      python_name: napam._writer:write_multiple
       title: Save multi-layer data with Macro Tool
-    - id: NaPaM.write_single_image
-      python_name: napari_macro._writer:write_single_image
+    - id: napam.write_single_image
+      python_name: napam._writer:write_single_image
       title: Save image data with Macro Tool
-    - id: NaPaM.make_sample_data
-      python_name: napari_macro._sample_data:make_sample_data
+    - id: napam.make_sample_data
+      python_name: napam._sample_data:make_sample_data
       title: Load sample data from Macro Tool
-    - id: NaPaM.make_macro_widget
-      python_name: napari_macro._widget:MacroWidget
+    - id: napam.make_macro_widget
+      python_name: napam._widget:MacroWidget
       title: Make Macro Widget
   readers:
-    - command: NaPaM.get_reader
+    - command: napam.get_reader
       accepts_directories: false
       filename_patterns: ['*.npy']
   writers:
-    - command: NaPaM.write_multiple
+    - command: napam.write_multiple
       layer_types: ['image*','labels*']
       filename_extensions: []
-    - command: NaPaM.write_single_image
+    - command: napam.write_single_image
       layer_types: ['image']
       filename_extensions: ['.npy']
   sample_data:
-    - command: NaPaM.make_sample_data
+    - command: napam.make_sample_data
       display_name: Macro Tool
       key: unique_id.1
   widgets:
-    - command: NaPaM.make_macro_widget
+    - command: napam.make_macro_widget
       display_name: Napari Macro

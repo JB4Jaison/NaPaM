@@ -1,4 +1,4 @@
-# from napari_macro import write_single_image, write_multiple
+# from napam import write_single_image, write_multiple
 
 # add your tests here...
 

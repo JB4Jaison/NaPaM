@@ -1,6 +1,6 @@
 import numpy as np
 
-from napari_macro import napari_get_reader
+from napam import napari_get_reader
 
 
 # tmp_path is a pytest fixture

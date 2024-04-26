@@ -1,11 +1,11 @@
-# NaPaM
+# napam
 
-[![License BSD-3](https://img.shields.io/pypi/l/NaPaM.svg?color=green)](https://github.com/githubuser/NaPaM/raw/main/LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/NaPaM.svg?color=green)](https://pypi.org/project/NaPaM)
-[![Python Version](https://img.shields.io/pypi/pyversions/NaPaM.svg?color=green)](https://python.org)
-[![tests](https://github.com/githubuser/NaPaM/workflows/tests/badge.svg)](https://github.com/githubuser/NaPaM/actions)
-[![codecov](https://codecov.io/gh/githubuser/NaPaM/branch/main/graph/badge.svg)](https://codecov.io/gh/githubuser/NaPaM)
-[![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/NaPaM)](https://napari-hub.org/plugins/NaPaM)
+[![License BSD-3](https://img.shields.io/pypi/l/napam.svg?color=green)](https://github.com/githubuser/napam/raw/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/napam.svg?color=green)](https://pypi.org/project/napam)
+[![Python Version](https://img.shields.io/pypi/pyversions/napam.svg?color=green)](https://python.org)
+[![tests](https://github.com/githubuser/napam/workflows/tests/badge.svg)](https://github.com/githubuser/napam/actions)
+[![codecov](https://codecov.io/gh/githubuser/napam/branch/main/graph/badge.svg)](https://codecov.io/gh/githubuser/napam)
+[![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napam)](https://napari-hub.org/plugins/napam)
 
 A plugin that allows you to run macros on the images for any kind of image processing.
 
@@ -23,9 +23,9 @@ https://napari.org/stable/plugins/index.html
 
 ## Installation
 
-You can install `NaPaM` via [pip]:
+You can install `napam` via [pip]:
 
-    pip install NaPaM
+    pip install napam
 
 
 
@@ -38,7 +38,7 @@ the coverage at least stays the same before you submit a pull request.
 ## License
 
 Distributed under the terms of the [BSD-3] license,
-"NaPaM" is free and open source software
+"napam" is free and open source software
 
 ## Issues
 
