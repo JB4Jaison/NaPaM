@@ -135,7 +135,7 @@ class MacroWidget(QWidget):
         # Get the selected image layer
         selected_layer = image_viewer.layers.selection.active
         data_dtype = selected_layer.data.dtype
-        print(f"Data Type of Selected Layer: {data_dtype}")
+        # print(f"Data Type of Selected Layer: {data_dtype}")
         roi_mask = np.ones(selected_layer.data.shape, dtype=data_dtype) # By default you would have the same size as the image
         image = deepcopy(selected_layer.data)
 
