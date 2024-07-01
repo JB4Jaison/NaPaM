@@ -134,8 +134,9 @@ class MacroWidget(QWidget):
         image_viewer = self.viewer
         # Get the selected image layer
         selected_layer = image_viewer.layers.selection.active
-   
-        roi_mask = np.ones(selected_layer.data.shape, dtype=np.int32) # By default you would have the same size as the image
+        data_dtype = selected_layer.data.dtype
+        print(f"Data Type of Selected Layer: {data_dtype}")
+        roi_mask = np.ones(selected_layer.data.shape, dtype=data_dtype) # By default you would have the same size as the image
         image = deepcopy(selected_layer.data)
 
         # Get the selected shape layer (ROI) - Assuming there is only 1 shape layer
@@ -191,18 +192,22 @@ class MacroWidget(QWidget):
             
 
             if isinstance(result_roi,(list, np.ndarray)):
-                result_roi = result_roi.astype(np.int32) # Multiplication and addition between int32 and float64 is ambiguous
+                result_roi = result_roi.astype(data_dtype) # Multiplication and addition between int32 and float64 is ambiguous
                 if self.roi_checkbox.isChecked():
 
                     temp_image = deepcopy(image)
                     # image_viewer.add_labels(image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text()+" Preview")
+                    if len(temp_image.shape) == 3:
+                        for stack in range(temp_image.shape[0]):
+                            if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
+                                # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
+                                temp_image[stack] *= (1 - roi_mask).astype(data_dtype)  # Set the ROI area to 0
+                                temp_image[stack] = temp_image[stack]
+                                temp_image[stack] += result_roi[stack]  # Add the modified ROI
 
-                    for stack in range(temp_image.shape[0]):
-                        if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
-                            # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
-                            temp_image[stack] *= (1 - roi_mask)  # Set the ROI area to 0
-                            temp_image[stack] = temp_image[stack].astype(np.int32)
-                            temp_image[stack] += result_roi[stack]  # Add the modified ROI
+                    elif len(temp_image.shape) == 2:
+                        if self.image_has_changed(original_ROI_image, result_roi):
+                            temp_image *= (1 - roi_mask).astype(data_dtype)
                     
                     image_viewer.add_image(temp_image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text(), colormap='gray')
                 else:
@@ -229,15 +234,20 @@ class MacroWidget(QWidget):
 
                     temp_image = deepcopy(image)
                     # image_viewer.add_labels(image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text()+" Preview")
+                    if len(temp_image.shape) == 3:
+                        for stack in range(temp_image.shape[0]):
+                            if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
+                                # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
+                                temp_image[stack] *= (1 - roi_mask)  # Set the ROI area to 0
+                                temp_image[stack] = temp_image[stack].astype(np.int32)
+                                temp_image[stack] += result_roi[stack]  # Add the modified ROI
 
-                    for stack in range(temp_image.shape[0]):
-                        if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
-                            # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
-                            temp_image[stack] *= (1 - roi_mask)  # Set the ROI area to 0
-                            temp_image[stack] = temp_image[stack].astype(np.int32)
-                            temp_image[stack] += result_roi[stack]  # Add the modified ROI
+                    elif len(temp_image.shape) == 2:
+                        if self.image_has_changed(original_ROI_image, result_roi):
+                            temp_image *= (1 - roi_mask)
                     
                     image_viewer.add_labels(temp_image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text())
+
                 else:
                     # Create a new image layer to display the result
                     image_viewer.add_labels(result_roi, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text())
@@ -265,12 +275,14 @@ class MacroWidget(QWidget):
         new_polygon = deepcopy(polygon)
 
         # print(f"Data Type of Polygon: f{type(polygon)}")
-        # print(polygon)
+        # print(f"Polygon:{polygon}")
+        # print(f"Polygon 0:{polygon[0]}")
         # print(f"Data Type of New Polygon: f{type(new_polygon)}")
 
         for vertex in new_polygon:
-            if len(polygon[0] == 3):
-                # This means it is a 3D image
+            # print(f"Vertex: {vertex}")
+            if len(vertex) == 3: # This means it is a 3D image
+                
                 # Z dimension (assuming this is 3D)
                 if vertex[0] < 0:
                     vertex[0] = 0
@@ -289,7 +301,7 @@ class MacroWidget(QWidget):
                 elif vertex[2] > image_shape[2]:
                     vertex[2] = image_shape[2]
 
-            elif len(polygon[0] == 2):
+            elif len(vertex) == 2:
                 # 2D image
 
                 # Y dimension (assuming this is 3D)
@@ -337,7 +349,7 @@ class MacroWidget(QWidget):
         # mask = path.contains_points(coordinates)
 
         # Reshape the mask back into the image shape
-        return mask.reshape((ny, nx)).astype(np.int32)
+        return mask.reshape((ny, nx))
     
     def image_has_changed(self, image, comparison_image):
         '''
@@ -356,7 +368,7 @@ class MacroWidget(QWidget):
         bool
             True if the images are different, False otherwise
         '''
-        print("Difference between the two images: ", (image - comparison_image) )
+        # print("Difference between the two images: ", (image - comparison_image) )
         return np.sum(image - comparison_image) != 0
 
 
