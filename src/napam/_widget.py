@@ -1,15 +1,9 @@
-"""
-This module is an example of a barebones QWidget plugin for napari
-
-It implements the Widget specification.
-see: https://napari.org/stable/plugins/guides.html?#widgets
-
-Replace code below according to your needs.
-"""
 from typing import TYPE_CHECKING
 
 from napari.layers import Image, Labels, Shapes
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton, QLabel, QLineEdit, QHBoxLayout, QCheckBox
+from PyQt5.Qsci import QsciScintilla, QsciLexerPython
+from PyQt5.QtGui import QColor, QFont
 import numpy as np
 from napari.layers import Labels
 from copy import deepcopy
@@ -38,10 +32,10 @@ def process_image(image:np.ndarray, code:str):
 
     '''
 
-    if image is None:
+    if len(image) == 0:
         return "Error: No image provided"
     
-    if code is None:
+    if not code:
         return "Error: No code provided"
     
     try:
@@ -88,6 +82,23 @@ class MacroWidget(QWidget):
     
     def add_code_box(self):
 
+        # code_area = QWidget()
+        # layout = QVBoxLayout()
+        
+        # layout.setContentsMargins(0, 0, 0, 0)
+
+        # new_combo_label = QLabel("Macro Code Area")
+        # layout.addWidget(new_combo_label) # Adding the first component in the layout - Label
+
+        # editor = QTextEdit(self)
+
+        # editor.setPlaceholderText("The Image (from the selected image layer) can be accessed here using the image variable and the final ouput should be assigned to result variable")
+        # layout.addWidget(editor) # Adding the second component in the layout - Text Area
+        
+
+        # code_area.setLayout(layout)
+        # self.layout().addWidget(code_area)
+
         code_area = QWidget()
         layout = QVBoxLayout()
         
@@ -96,16 +107,92 @@ class MacroWidget(QWidget):
         new_combo_label = QLabel("Macro Code Area")
         layout.addWidget(new_combo_label) # Adding the first component in the layout - Label
 
-        new_text_area = QTextEdit(self)
+        # Creating a QsciScintilla text editor
+        editor = QsciScintilla(self)
+        font = QFont('Consolas', 11)
+       
+        """
+        Customization - GENERAL
+        """
+        # Setting a lexer for syntax highlighting
+        lexer = QsciLexerPython()
+        editor.setLexer(lexer)
+        editor.setFont(font)
+        # Set the encoding to UTF-8
+        editor.setUtf8(True)
+        # Set tab width to 4 spaces
+        editor.setTabWidth(4)  
+        # Placeholder text
+        editor.setText("image #The input variable - your selected image\n'''\nAdd your Processing Steps Here\n'''\nresult= image")
 
-        new_text_area.setPlaceholderText("The Image (from the selected image layer) can be accessed here using the image variable and the final ouput should be assigned to result variable")
-        layout.addWidget(new_text_area) # Adding the second component in the layout - Text Area
+        # Set text wrapping mode
+        editor.setWrapMode(QsciScintilla.WrapWord)
+
+        """
+        Customization - CARET (the blinking cursor indicator)
+        """
+        # Set the caret color to red
+        caret_fg_color = QColor("#ffff0000")
+        editor.setCaretForegroundColor(caret_fg_color)
+        # Enable and set the caret line background color to slightly transparent blue
+        editor.setCaretLineVisible(True)
+        caret_bg_color = QColor("#1f0000ff")
+        editor.setCaretLineBackgroundColor(caret_bg_color)
+        # Set the caret width of 4 pixels
+        editor.setCaretWidth(4)
+
+        """
+        Customization - AUTOCOMPLETION
+        """
+        # Set the autocompletions to case INsensitive
+        editor.setAutoCompletionCaseSensitivity(False)
+        # Set the autocompletion to not replace the word to the right of the cursor
+        editor.setAutoCompletionReplaceWord(False)
+        # Set the autocompletion source to be the words in the document
+        editor.setAutoCompletionSource(QsciScintilla.AcsDocument)
+        # Set the autocompletion dialog to appear as soon as 1 character is typed
+        editor.setAutoCompletionThreshold(1)
         
 
+        # Set dark mode colors
+        editor.setPaper(QColor('#ff2e2e2e'))  # Background color
+         # Set the default style values
+        # editor.setColor(QColor(0xff, 0xff, 0xff))
+        # editor.setPaper(QColor(0x2e, 0x2e, 0x2e))
+        editor.setColor(QColor('#ffffffff'))  # Default text color
+        # editor.SendScintilla(QsciScintilla.SCI_STYLESETBACK, QsciScintilla.STYLE_DEFAULT, QColor('#2e2e2e'))
+        # editor.SendScintilla(QsciScintilla.SCI_STYLESETFORE, QsciScintilla.STYLE_DEFAULT, QColor('#ffffff'))
+
+        # Set line number margin colors
+        editor.setMarginType(0, QsciScintilla.NumberMargin)  # Set margin 0 as line numbers
+        editor.setMarginWidth(0, 20)  # Set margin width to fit line numbers
+        # editor.setMarginsBackgroundColor(QColor('#2e2e2e'))  # Background color for line number margin
+        # editor.setMarginsForegroundColor(QColor('#8c8c8c'))  # Text color for line numbers
+
+
+
+        # Configure lexer for dark mode syntax highlighting
+        # lexer.setDefaultFont(font)
+        # lexer.setPaper(QColor('#2e2e2e'))
+        # # lexer.setColor(QColor('#ffffffff'), QsciLexerPython.Default)
+        # lexer.setColor(QColor('#00ffffff'), QsciLexerPython.UnclosedString)
+        # lexer.setColor(QColor('#ffdcdcaa'), QsciLexerPython.Keyword)
+        # lexer.setColor(QColor('#ff9cdcfe'), QsciLexerPython.ClassName)
+        # lexer.setColor(QColor('#ff4ec9b0'), QsciLexerPython.FunctionMethodName)
+        # lexer.setColor(QColor('#ff509046'), QsciLexerPython.Comment)
+        # lexer.setColor(QColor('#ffd16969'), QsciLexerPython.Number)
+        # lexer.setColor(QColor('#ffb5cea8'), QsciLexerPython.DoubleQuotedString)
+        # lexer.setColor(QColor('#ffb5cea8'), QsciLexerPython.SingleQuotedString)
+        # lexer.setColor(QColor("#ffff0000"), QsciLexerPython.TripleSingleQuotedString)
+
+        # for i in range(len(QsciLexerPython.styles)):
+        #     lexer.setPaper(QColor(0xff, 0xff, 0xff), i)
+
+        layout.addWidget(editor) # Adding the second component in the layout - QsciScintilla
         code_area.setLayout(layout)
         self.layout().addWidget(code_area)
 
-        return new_text_area
+        return editor
     
     def output_name_text_box(self):
 
@@ -129,7 +216,7 @@ class MacroWidget(QWidget):
         return output_label_area
 
     def run_code(self):
-        code = self.code_input.toPlainText()
+        code = self.code_input.text()
         
         image_viewer = self.viewer
         # Get the selected image layer
