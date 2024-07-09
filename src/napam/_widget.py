@@ -1,7 +1,5 @@
-from typing import TYPE_CHECKING
-
 from napari.layers import Image, Labels, Shapes
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton, QLabel, QLineEdit, QHBoxLayout, QCheckBox
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QHBoxLayout, QCheckBox, QComboBox
 from PyQt5.Qsci import QsciScintilla, QsciLexerPython
 from PyQt5.QtGui import QColor, QFont
 import numpy as np
@@ -10,7 +8,6 @@ from copy import deepcopy
 from matplotlib.path import Path
 import time
 import datetime
-
 import napari
 
 # Create a function to process the image based on the user's code
@@ -66,6 +63,22 @@ class MacroWidget(QWidget):
 
         self.setLayout(QVBoxLayout())
 
+        # Create dropdowns for selecting layers
+        self.image_layer_dropdown = QComboBox()
+        self.shape_layer_dropdown = QComboBox()
+        
+        self.layout().addWidget(QLabel("Select Image/Label Layer:"))
+        self.layout().addWidget(self.image_layer_dropdown)
+
+        self.layout().addWidget(QLabel("Select Shape Layer:"))
+        self.layout().addWidget(self.shape_layer_dropdown)
+
+        self.update_layer_dropdowns()
+
+        # Connect layer events to update the dropdowns
+        self.viewer.layers.events.inserted.connect(self.update_layer_dropdowns)
+        self.viewer.layers.events.removed.connect(self.update_layer_dropdowns)
+
         # Create a QTextEdit for the user to input code
         self.code_input = self.add_code_box()
 
@@ -79,25 +92,18 @@ class MacroWidget(QWidget):
         # Create a checkbox for selecting ROI
         self.roi_checkbox = QCheckBox("Apply to ROI only")
         self.layout().addWidget(self.roi_checkbox)
+
+    def update_layer_dropdowns(self, event=None):
+        self.image_layer_dropdown.clear()
+        self.shape_layer_dropdown.clear()
+
+        for layer in self.viewer.layers:
+            if isinstance(layer, (Image, Labels)):
+                self.image_layer_dropdown.addItem(layer.name)
+            elif isinstance(layer, Shapes):
+                self.shape_layer_dropdown.addItem(layer.name)
     
     def add_code_box(self):
-
-        # code_area = QWidget()
-        # layout = QVBoxLayout()
-        
-        # layout.setContentsMargins(0, 0, 0, 0)
-
-        # new_combo_label = QLabel("Macro Code Area")
-        # layout.addWidget(new_combo_label) # Adding the first component in the layout - Label
-
-        # editor = QTextEdit(self)
-
-        # editor.setPlaceholderText("The Image (from the selected image layer) can be accessed here using the image variable and the final ouput should be assigned to result variable")
-        # layout.addWidget(editor) # Adding the second component in the layout - Text Area
-        
-
-        # code_area.setLayout(layout)
-        # self.layout().addWidget(code_area)
 
         code_area = QWidget()
         layout = QVBoxLayout()
@@ -193,7 +199,7 @@ class MacroWidget(QWidget):
         self.layout().addWidget(code_area)
 
         return editor
-    
+                   
     def output_name_text_box(self):
 
         output_label_area = QWidget()
@@ -219,32 +225,37 @@ class MacroWidget(QWidget):
         code = self.code_input.text()
         
         image_viewer = self.viewer
+
+        # # Get the selected image layer
+        # selected_layer = image_viewer.layers.selection.active
+    
         # Get the selected image layer
-        selected_layer = image_viewer.layers.selection.active
-        data_dtype = selected_layer.data.dtype
+        selected_image_layer_name = self.image_layer_dropdown.currentText()
+        selected_layer = image_viewer.layers[selected_image_layer_name]
         # print(f"Data Type of Selected Layer: {data_dtype}")
+
+        data_dtype = selected_layer.data.dtype
         roi_mask = np.ones(selected_layer.data.shape, dtype=data_dtype) # By default you would have the same size as the image
         image = deepcopy(selected_layer.data)
 
         # Get the selected shape layer (ROI) - Assuming there is only 1 shape layer
-        selected_shape_layer = None
-        for layer in image_viewer.layers:
-            if isinstance(layer, Shapes):
-                selected_shape_layer = layer
-                break
+        # selected_shape_layer = None
+        # for layer in image_viewer.layers:
+        #     if isinstance(layer, Shapes):
+        #         selected_shape_layer = layer
+        #         break
+
+        # Get the selected shape layer (ROI)
+        selected_shape_layer_name = self.shape_layer_dropdown.currentText()
+        selected_shape_layer = image_viewer.layers[selected_shape_layer_name]
         
         # Extract the ROI from the selected shape layer
         if selected_shape_layer is not None:
 
-            #TODO: Add the code for the label ROI processing to this section
-
             # Calculate the intersection between the ROI and the image, if checkbox is selected
             # We need to calcuate the intersection to prevent the ROI from selecting areas outside the image space
             if self.roi_checkbox.isChecked():
-                # Get the shape of the image and use the dimensions to extract the mask from the shape
-                # roi_mask = selected_layer.data.shape[-2] * roi_polygon.to_mask(
-                #     selected_layer.data.shape[-2:]).data 
-
+  
                 # Get the shape of the image
                 image_shape = image.shape
                 
@@ -271,7 +282,8 @@ class MacroWidget(QWidget):
 
         if isinstance(selected_layer, (Image)):
 
-             # Get the original image within the ROI space
+            #TODO - Make non rectangular ROIs work more smoothly
+            # Get the original image within the ROI space
             original_ROI_image = image * roi_mask
             ROI_copy = deepcopy(original_ROI_image)
 
@@ -391,7 +403,7 @@ class MacroWidget(QWidget):
             elif len(vertex) == 2:
                 # 2D image
 
-                # Y dimension (assuming this is 3D)
+                # Y dimension (assuming this is 2D)
                 if vertex[0] < 0:
                     vertex[0] = 0
                 elif vertex[0] > image_shape[0]:
@@ -404,7 +416,8 @@ class MacroWidget(QWidget):
                     vertex[1] = image_shape[1]
             else:
                 Exception("Invalid shape passed - must be a 2D or a 3D shape")
-        print(new_polygon)
+
+        # print(new_polygon)
         return new_polygon
     
     def roi_to_mask(self, polygon, shape_image_dimensions):
@@ -455,7 +468,7 @@ class MacroWidget(QWidget):
         bool
             True if the images are different, False otherwise
         '''
-        # print("Difference between the two images: ", (image - comparison_image) )
+        
         return np.sum(image - comparison_image) != 0
 
 
