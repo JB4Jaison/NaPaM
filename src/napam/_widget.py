@@ -223,7 +223,7 @@ class MacroWidget(QWidget):
 
     def run_code(self):
         code = self.code_input.text()
-        
+        selected_shape_layer = None
         image_viewer = self.viewer
 
         # # Get the selected image layer
@@ -246,8 +246,9 @@ class MacroWidget(QWidget):
         #         break
 
         # Get the selected shape layer (ROI)
-        selected_shape_layer_name = self.shape_layer_dropdown.currentText()
-        selected_shape_layer = image_viewer.layers[selected_shape_layer_name]
+        if self.roi_checkbox.isChecked():
+            selected_shape_layer_name = self.shape_layer_dropdown.currentText()
+            selected_shape_layer = image_viewer.layers[selected_shape_layer_name]
         
         # Extract the ROI from the selected shape layer
         if selected_shape_layer is not None:
