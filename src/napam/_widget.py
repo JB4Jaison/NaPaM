@@ -238,13 +238,6 @@ class MacroWidget(QWidget):
         roi_mask = np.ones(selected_layer.data.shape, dtype=data_dtype) # By default you would have the same size as the image
         image = deepcopy(selected_layer.data)
 
-        # Get the selected shape layer (ROI) - Assuming there is only 1 shape layer
-        # selected_shape_layer = None
-        # for layer in image_viewer.layers:
-        #     if isinstance(layer, Shapes):
-        #         selected_shape_layer = layer
-        #         break
-
         # Get the selected shape layer (ROI)
         if self.roi_checkbox.isChecked():
             selected_shape_layer_name = self.shape_layer_dropdown.currentText()
@@ -260,19 +253,19 @@ class MacroWidget(QWidget):
                 # Get the shape of the image
                 image_shape = image.shape
                 
-                print(f"Selected shape layer data type {type(selected_shape_layer.data[0])}")
+                # print(f"Selected shape layer data type {type(selected_shape_layer.data[0])}")
                 # Interesect the given shape with the image selected
                 roi_polygon = self.intersect_mask_with_image(selected_shape_layer.data[0], image_shape)
 
                 # print(len(roi_polygon))
                 # print(type(roi_polygon))
-                # Create the mask with the same shape as the image
 
-                # Do it manually instead of doing it via the APIs
+                # Create the mask with the same shape as the image
                 # roi_mask = selected_shape_layer.to_masks(roi_polygon)
                 roi_mask = self.roi_to_mask(roi_polygon, image_shape)
-
-                # print(roi_mask)
+                # roi_mask = np.where(roi_mask, False, True)
+                roi_mask = roi_mask.astype(data_dtype) # Convert the mask to the same data type as the image
+                print("ROI Mask:", roi_mask)
                 # print(roi_mask.shape)
   
                 
@@ -283,13 +276,12 @@ class MacroWidget(QWidget):
 
         if isinstance(selected_layer, (Image)):
 
-            #TODO - Make non rectangular ROIs work more smoothly
             # Get the original image within the ROI space
             original_ROI_image = image * roi_mask
             ROI_copy = deepcopy(original_ROI_image)
-
+            # print("Original ROI Image :", original_ROI_image)
             result_roi = process_image(ROI_copy, code)
-            
+            # print("Roi Result:", result_roi)
 
             if isinstance(result_roi,(list, np.ndarray)):
                 result_roi = result_roi.astype(data_dtype) # Multiplication and addition between int32 and float64 is ambiguous
@@ -307,8 +299,10 @@ class MacroWidget(QWidget):
 
                     elif len(temp_image.shape) == 2:
                         if self.image_has_changed(original_ROI_image, result_roi):
+                            # print("Image has changed in 2D")
                             temp_image *= (1 - roi_mask).astype(data_dtype)
-                    
+                            temp_image += result_roi
+
                     image_viewer.add_image(temp_image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text(), colormap='gray')
                 else:
                     
@@ -344,7 +338,9 @@ class MacroWidget(QWidget):
 
                     elif len(temp_image.shape) == 2:
                         if self.image_has_changed(original_ROI_image, result_roi):
+                            # print("Label has changed in 2D")
                             temp_image *= (1 - roi_mask)
+                            temp_image += result_roi
                     
                     image_viewer.add_labels(temp_image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text())
 
@@ -376,8 +372,8 @@ class MacroWidget(QWidget):
 
         # print(f"Data Type of Polygon: f{type(polygon)}")
         # print(f"Polygon:{polygon}")
-        # print(f"Polygon 0:{polygon[0]}")
-        # print(f"Data Type of New Polygon: f{type(new_polygon)}")
+        # print(f"Image Shape: {image_shape}")
+        # print(f"Data Type of Image Shape: {type(image_shape)}")
 
         for vertex in new_polygon:
             # print(f"Vertex: {vertex}")
@@ -385,19 +381,19 @@ class MacroWidget(QWidget):
                 
                 # Z dimension (assuming this is 3D)
                 if vertex[0] < 0:
-                    vertex[0] = 0
+                    vertex[0] = -1 #interesting peculiarity of the napari shapes layer where the first edge start from -1
                 elif vertex[0] > image_shape[0]:
                     vertex[0] = image_shape[0]
 
                 # Y dimension
                 if vertex[1] < 0:
-                    vertex[1] = 0
+                    vertex[1] = -1
                 elif vertex[1] > image_shape[1]:
                     vertex[1] = image_shape[1]
 
                 # X dimension
                 if vertex[2] < 0:
-                    vertex[2] = 0
+                    vertex[2] = -1
                 elif vertex[2] > image_shape[2]:
                     vertex[2] = image_shape[2]
 
@@ -406,19 +402,20 @@ class MacroWidget(QWidget):
 
                 # Y dimension (assuming this is 2D)
                 if vertex[0] < 0:
-                    vertex[0] = 0
+                    vertex[0] = -1
                 elif vertex[0] > image_shape[0]:
                     vertex[0] = image_shape[0]
 
                 # X dimension
                 if vertex[1] < 0:
-                    vertex[1] = 0
+                    vertex[1] = -1
                 elif vertex[1] > image_shape[1]:
                     vertex[1] = image_shape[1]
             else:
                 Exception("Invalid shape passed - must be a 2D or a 3D shape")
 
-        # print(new_polygon)
+
+        print("New Polygon:", new_polygon)
         return new_polygon
     
     def roi_to_mask(self, polygon, shape_image_dimensions):

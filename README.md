@@ -27,9 +27,6 @@ You can install `napam` via [pip]:
 
     pip install napam
 
-
-
-
 ## Contributing
 
 Contributions are very welcome. Tests can be run with [tox], please ensure
