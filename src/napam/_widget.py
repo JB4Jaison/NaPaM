@@ -94,6 +94,13 @@ class MacroWidget(QWidget):
         self.layout().addWidget(self.roi_checkbox)
 
     def update_layer_dropdowns(self, event=None):
+        print("Updating Layer Dropdowns ...")
+
+        # Retainn the current selection
+        current_image_layer = self.image_layer_dropdown.currentText()
+        current_shape_layer = self.shape_layer_dropdown.currentText()
+
+        # Clear the dropdowns
         self.image_layer_dropdown.clear()
         self.shape_layer_dropdown.clear()
 
@@ -102,6 +109,9 @@ class MacroWidget(QWidget):
                 self.image_layer_dropdown.addItem(layer.name)
             elif isinstance(layer, Shapes):
                 self.shape_layer_dropdown.addItem(layer.name)
+
+        self.image_layer_dropdown.setCurrentText(current_image_layer)
+        self.shape_layer_dropdown.setCurrentText(current_shape_layer)
     
     def add_code_box(self):
 

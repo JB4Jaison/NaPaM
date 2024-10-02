@@ -6,36 +6,9 @@ visibility: public
 categories: ["Annotation", "Segmentation", "Acquisition"]
 contributions:
   commands:
-    - id: napam.get_reader
-      python_name: napam._reader:napari_get_reader
-      title: Open data with Macro Tool
-    - id: napam.write_multiple
-      python_name: napam._writer:write_multiple
-      title: Save multi-layer data with Macro Tool
-    - id: napam.write_single_image
-      python_name: napam._writer:write_single_image
-      title: Save image data with Macro Tool
-    - id: napam.make_sample_data
-      python_name: napam._sample_data:make_sample_data
-      title: Load sample data from Macro Tool
     - id: napam.make_macro_widget
       python_name: napam._widget:MacroWidget
       title: Make Macro Widget
-  readers:
-    - command: napam.get_reader
-      accepts_directories: false
-      filename_patterns: ['*.npy']
-  writers:
-    - command: napam.write_multiple
-      layer_types: ['image*','labels*']
-      filename_extensions: []
-    - command: napam.write_single_image
-      layer_types: ['image']
-      filename_extensions: ['.npy']
-  sample_data:
-    - command: napam.make_sample_data
-      display_name: Macro Tool
-      key: unique_id.1
   widgets:
     - command: napam.make_macro_widget
       display_name: Napari Macro
