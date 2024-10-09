@@ -100,7 +100,7 @@ class MacroWidget(QWidget):
         current_image_layer = self.image_layer_dropdown.currentText()
         current_shape_layer = self.shape_layer_dropdown.currentText()
 
-        # Clear the dropdowns
+        # Clear the dropdown lists
         self.image_layer_dropdown.clear()
         self.shape_layer_dropdown.clear()
 
@@ -235,9 +235,6 @@ class MacroWidget(QWidget):
         code = self.code_input.text()
         selected_shape_layer = None
         image_viewer = self.viewer
-
-        # # Get the selected image layer
-        # selected_layer = image_viewer.layers.selection.active
     
         # Get the selected image layer
         selected_image_layer_name = self.image_layer_dropdown.currentText()
@@ -245,7 +242,7 @@ class MacroWidget(QWidget):
         # print(f"Data Type of Selected Layer: {data_dtype}")
 
         data_dtype = selected_layer.data.dtype
-        roi_mask = np.ones(selected_layer.data.shape, dtype=data_dtype) # By default you would have the same size as the image
+        roi_mask = np.ones(selected_layer.data.shape, dtype=data_dtype) # By default you would have the roi being the same size as the image
         image = deepcopy(selected_layer.data)
 
         # Get the selected shape layer (ROI)
@@ -259,7 +256,7 @@ class MacroWidget(QWidget):
             # Calculate the intersection between the ROI and the image, if checkbox is selected
             # We need to calcuate the intersection to prevent the ROI from selecting areas outside the image space
             if self.roi_checkbox.isChecked():
-  
+                print("Calualting the ROI Mask...")
                 # Get the shape of the image
                 image_shape = image.shape
                 
@@ -275,11 +272,12 @@ class MacroWidget(QWidget):
                 roi_mask = self.roi_to_mask(roi_polygon, image_shape)
                 # roi_mask = np.where(roi_mask, False, True)
                 roi_mask = roi_mask.astype(data_dtype) # Convert the mask to the same data type as the image
-                print("ROI Mask:", roi_mask)
-                # print(roi_mask.shape)
-  
+                # print("ROI Mask:", roi_mask)
+                # print("No of ones in ROI Mask:", np.sum(roi_mask))
+                # print("No of zeros in ROI Mask:", np.sum(roi_mask == 0))
+                print("ROI Mask generated...")
                 
-        elif selected_shape_layer is None and self.roi_checkbox.isChecked():
+        elif selected_shape_layer is None and self.roi_checkbox.isChecked(): #CHECK IF THIS IS THE RIGHT WAY TO HANDLE THIS
             print("ROI CHECKBOX CHECKED BUT NO ROI PROVIDED!!! Please provide an ROI using the Shapes layer ...")
             print("Using the entire image as ROI ...")
 
@@ -291,9 +289,12 @@ class MacroWidget(QWidget):
             ROI_copy = deepcopy(original_ROI_image)
             # print("Original ROI Image :", original_ROI_image)
             result_roi = process_image(ROI_copy, code)
+            
             # print("Roi Result:", result_roi)
 
             if isinstance(result_roi,(list, np.ndarray)):
+                 
+                result_roi = result_roi * roi_mask # Apply the ROI mask to the result to retain only relevant parts
                 result_roi = result_roi.astype(data_dtype) # Multiplication and addition between int32 and float64 is ambiguous
                 if self.roi_checkbox.isChecked():
 
@@ -330,10 +331,13 @@ class MacroWidget(QWidget):
             original_ROI_image = image * roi_mask
             ROI_copy = deepcopy(original_ROI_image)
 
-            result_roi = process_image(ROI_copy, code)
+            result_roi = process_image(ROI_copy, code) 
+            
 
             if isinstance(result_roi,(list, np.ndarray)):
-                result_roi = result_roi.astype(np.int32)
+
+                result_roi = result_roi * roi_mask 
+                result_roi = result_roi.astype(data_dtype)
                 if self.roi_checkbox.isChecked():
 
                     temp_image = deepcopy(image)
@@ -343,7 +347,7 @@ class MacroWidget(QWidget):
                             if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
                                 # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
                                 temp_image[stack] *= (1 - roi_mask)  # Set the ROI area to 0
-                                temp_image[stack] = temp_image[stack].astype(np.int32)
+                                temp_image[stack] = temp_image[stack].astype(data_dtype)
                                 temp_image[stack] += result_roi[stack]  # Add the modified ROI
 
                     elif len(temp_image.shape) == 2:
