@@ -3,7 +3,7 @@
 [![License BSD-3](https://img.shields.io/pypi/l/napam.svg?color=green)](https://github.com/JB4Jaison/napam/raw/main/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/napam.svg?color=green)](https://pypi.org/project/napam)
 [![Python Version](https://img.shields.io/pypi/pyversions/napam.svg?color=green)](https://python.org)
-[![codecov](https://codecov.io/gh/githubuser/napam/branch/main/graph/badge.svg)](https://codecov.io/gh/JB4Jaison/NaPaM)
+[![codecov](https://codecov.io/gh/githubuser/napam/branch/main/graph/badge.svg)](https://app.codecov.io/gh/JB4Jaison/NaPaM)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napam)](https://napari-hub.org/plugins/napam)
 
 A plugin that allows you to run macros on the images for any kind of image processing.
