@@ -9,6 +9,7 @@ from matplotlib.path import Path
 import time
 import datetime
 import napari
+import traceback
 
 # Create a function to process the image based on the user's code
 def process_image(image:np.ndarray, code:str):
@@ -54,7 +55,7 @@ def process_image(image:np.ndarray, code:str):
         return result
     except Exception as e:
         print("AN ERROR OCCURED ...")
-        return f"Error: {str(e)}"
+        return f"Error: {traceback.format_exc()}"
 
 class MacroWidget(QWidget):
     def __init__(self, napari_viewer: 'napari.viewer.Viewer'):

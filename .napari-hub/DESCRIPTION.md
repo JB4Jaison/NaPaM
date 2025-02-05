@@ -8,3 +8,7 @@ The input to the plugin can be your label or image layer and the output will be 
 
 # Why NaPaM?
 We have the console, so why do we need another plugin? The console can be clunky if you want to write multiline python scripts and to edit the scripts. Instead of that we have the code area which works like a text editor where you can write your python scripts run and edit them. (Future release to have a smart code box that would help in understanding the coding language and provide syntax highlighting). You also can (as mentioned before) run it on just a custom ROI of your data.
+
+# Demo
+This is to demonstrate how the plugin can be used to run any script on an image.
+![](assets/napam_execution_demo.mp4)
