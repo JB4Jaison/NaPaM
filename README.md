@@ -33,7 +33,7 @@ the coverage at least stays the same before you submit a pull request.
 
 # Demo
 This is to demonstrate how the plugin can be used to run any script on an image.
-![video of napam demo](https://github.com/user-attachments/assets/24bebe67-8186-4189-8679-2148cbe26859)
+<video src="https://github.com/user-attachments/assets/24bebe67-8186-4189-8679-2148cbe26859" width="352" height="720"></video>
 
 ## License
 
