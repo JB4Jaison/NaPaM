@@ -2,6 +2,8 @@ import pytest
 from .._widget import process_image, MacroWidget
 from napari import Viewer
 import numpy as np
+from qtpy.QtCore import QTimer
+import napari
 
 @pytest.fixture
 def viewer():
@@ -30,6 +32,11 @@ def test_macro_widget_image_change_detection(macro_widget, viewer):
     viewer.layers[0].data = changed_image
     # Trigger any function or check that should detect this change
     assert macro_widget.image_has_changed(initial_image, changed_image), "Widget should detect the image change."
+
+    with napari.gui_qt() as app:
+        time_in_msec = 1000
+        QTimer().singleShot(time_in_msec, app.quit)
+    viewer.close()
 
 def test_image_processing_function():
     # Placeholder for testing a specific image processing function
