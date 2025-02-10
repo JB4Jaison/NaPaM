@@ -1,22 +1,15 @@
 import pytest
 from .._widget import process_image, MacroWidget
 from napari import Viewer
-from qtpy.QtWidgets import QApplication
 import numpy as np
-from qtpy.QtCore import Qt
-
-@pytest.fixture
-def app(qtbot):
-    return QApplication.instance() or QApplication([])
 
 @pytest.fixture
 def viewer():
     return Viewer()
 
 @pytest.fixture
-def macro_widget(viewer, qtbot):
+def macro_widget(viewer):
     widget = MacroWidget(viewer)
-    qtbot.addWidget(widget)
     return widget
 
 #TODO: Create mock class for the GUI and test the GUI elements
@@ -28,7 +21,7 @@ def test_process_image():
     result = process_image(image, code)
     assert np.array_equal(result, image), "The processed image should match the original."
 
-def test_macro_widget_image_change_detection(macro_widget, viewer, qtbot):
+def test_macro_widget_image_change_detection(macro_widget, viewer):
     # Testing the widget's ability to detect changes in the image
     initial_image = np.zeros((10, 10))
     viewer.add_image(initial_image)

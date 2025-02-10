@@ -43,15 +43,13 @@ def process_image(image:np.ndarray, code:str):
         
         # Time the execution of the code
         start = time.time()
-        # Execute the user's code within the namespace
         exec(code, namespace)
 
         end = time.time()
         print(f"Time Elapsed For Completion - {str(datetime.timedelta(seconds=end - start))}")
-        # Retrieve the result from the namespace
+
         result = namespace.get('result', None)
-        # print(result, type(result))
-        
+
         return result
     except Exception as e:
         print("AN ERROR OCCURED ...")
@@ -76,11 +74,9 @@ class MacroWidget(QWidget):
 
         self.update_layer_dropdowns()
 
-        # Connect layer events to update the dropdowns
         self.viewer.layers.events.inserted.connect(self.update_layer_dropdowns)
         self.viewer.layers.events.removed.connect(self.update_layer_dropdowns)
 
-        # Create a QTextEdit for the user to input code
         self.code_input = self.add_code_box()
 
         self.run_button = QPushButton("Run Code")
@@ -90,12 +86,10 @@ class MacroWidget(QWidget):
 
         self.output_layer_text = self.output_name_text_box()
 
-        # Create a checkbox for selecting ROI
         self.roi_checkbox = QCheckBox("Apply to ROI only")
         self.layout().addWidget(self.roi_checkbox)
 
     def update_layer_dropdowns(self, event=None):
-        print("Updating Layer Dropdowns ...")
 
         # Retainn the current selection
         current_image_layer = self.image_layer_dropdown.currentText()
@@ -122,7 +116,7 @@ class MacroWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         new_combo_label = QLabel("Macro Code Area")
-        layout.addWidget(new_combo_label) # Adding the first component in the layout - Label
+        layout.addWidget(new_combo_label)
 
         # Creating a QsciScintilla text editor
         editor = QsciScintilla(self)
@@ -135,12 +129,9 @@ class MacroWidget(QWidget):
         lexer = QsciLexerPython()
         editor.setLexer(lexer)
         editor.setFont(font)
-        # Set the encoding to UTF-8
         editor.setUtf8(True)
-        # Set tab width to 4 spaces
         editor.setTabWidth(4)  
-        # Placeholder text
-        editor.setText("image #The input variable - your selected image\n'''\nAdd your Processing Steps Here\n'''\nresult= image")
+        editor.setText("image # The input variable - your selected image\n\n'''\nAdd your Processing Steps Here\n'''\n\nresult = image")
 
         # Set text wrapping mode
         editor.setWrapMode(QsciScintilla.WrapWord)
@@ -155,8 +146,6 @@ class MacroWidget(QWidget):
         editor.setCaretLineVisible(True)
         caret_bg_color = QColor("#1f0000ff")
         editor.setCaretLineBackgroundColor(caret_bg_color)
-        # Set the caret width of 4 pixels
-        editor.setCaretWidth(4)
 
         """
         Customization - AUTOCOMPLETION
@@ -173,37 +162,11 @@ class MacroWidget(QWidget):
 
         # Set dark mode colors
         editor.setPaper(QColor('#ff2e2e2e'))  # Background color
-         # Set the default style values
-        # editor.setColor(QColor(0xff, 0xff, 0xff))
-        # editor.setPaper(QColor(0x2e, 0x2e, 0x2e))
-        editor.setColor(QColor('#ffffffff'))  # Default text color
-        # editor.SendScintilla(QsciScintilla.SCI_STYLESETBACK, QsciScintilla.STYLE_DEFAULT, QColor('#2e2e2e'))
-        # editor.SendScintilla(QsciScintilla.SCI_STYLESETFORE, QsciScintilla.STYLE_DEFAULT, QColor('#ffffff'))
+        editor.setColor(QColor('#ffffffff'))
 
         # Set line number margin colors
         editor.setMarginType(0, QsciScintilla.NumberMargin)  # Set margin 0 as line numbers
         editor.setMarginWidth(0, 20)  # Set margin width to fit line numbers
-        # editor.setMarginsBackgroundColor(QColor('#2e2e2e'))  # Background color for line number margin
-        # editor.setMarginsForegroundColor(QColor('#8c8c8c'))  # Text color for line numbers
-
-
-
-        # Configure lexer for dark mode syntax highlighting
-        # lexer.setDefaultFont(font)
-        # lexer.setPaper(QColor('#2e2e2e'))
-        # # lexer.setColor(QColor('#ffffffff'), QsciLexerPython.Default)
-        # lexer.setColor(QColor('#00ffffff'), QsciLexerPython.UnclosedString)
-        # lexer.setColor(QColor('#ffdcdcaa'), QsciLexerPython.Keyword)
-        # lexer.setColor(QColor('#ff9cdcfe'), QsciLexerPython.ClassName)
-        # lexer.setColor(QColor('#ff4ec9b0'), QsciLexerPython.FunctionMethodName)
-        # lexer.setColor(QColor('#ff509046'), QsciLexerPython.Comment)
-        # lexer.setColor(QColor('#ffd16969'), QsciLexerPython.Number)
-        # lexer.setColor(QColor('#ffb5cea8'), QsciLexerPython.DoubleQuotedString)
-        # lexer.setColor(QColor('#ffb5cea8'), QsciLexerPython.SingleQuotedString)
-        # lexer.setColor(QColor("#ffff0000"), QsciLexerPython.TripleSingleQuotedString)
-
-        # for i in range(len(QsciLexerPython.styles)):
-        #     lexer.setPaper(QColor(0xff, 0xff, 0xff), i)
 
         layout.addWidget(editor) # Adding the second component in the layout - QsciScintilla
         code_area.setLayout(layout)
@@ -219,13 +182,13 @@ class MacroWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         new_output_label = QLabel("Output Layer Name")
-        layout.addWidget(new_output_label) # Adding the first component in the layout - Label
+        layout.addWidget(new_output_label)
 
         new_output_text_area = QLineEdit(self)
 
         new_output_text_area.setText("Processed Image")
         new_output_text_area.setObjectName("OutputNameBox") # Setting the id for the object to reference later
-        layout.addWidget(new_output_text_area) # Adding the second component in the layout - Text Area
+        layout.addWidget(new_output_text_area)
 
         output_label_area.setLayout(layout)
         self.layout().addWidget(output_label_area)
@@ -240,7 +203,6 @@ class MacroWidget(QWidget):
         # Get the selected image layer
         selected_image_layer_name = self.image_layer_dropdown.currentText()
         selected_layer = image_viewer.layers[selected_image_layer_name]
-        # print(f"Data Type of Selected Layer: {data_dtype}")
 
         data_dtype = selected_layer.data.dtype
         roi_mask = np.ones(selected_layer.data.shape, dtype=data_dtype) # By default you would have the roi being the same size as the image
@@ -260,22 +222,15 @@ class MacroWidget(QWidget):
                 print("Calualting the ROI Mask...")
                 # Get the shape of the image
                 image_shape = image.shape
-                
-                # print(f"Selected shape layer data type {type(selected_shape_layer.data[0])}")
-                # Interesect the given shape with the image selected
+
+                # Intersect the given shape with the image selected
                 roi_polygon = self.intersect_mask_with_image(selected_shape_layer.data[0], image_shape)
 
-                # print(len(roi_polygon))
-                # print(type(roi_polygon))
-
                 # Create the mask with the same shape as the image
-                # roi_mask = selected_shape_layer.to_masks(roi_polygon)
                 roi_mask = self.roi_to_mask(roi_polygon, image_shape)
                 # roi_mask = np.where(roi_mask, False, True)
                 roi_mask = roi_mask.astype(data_dtype) # Convert the mask to the same data type as the image
-                # print("ROI Mask:", roi_mask)
-                # print("No of ones in ROI Mask:", np.sum(roi_mask))
-                # print("No of zeros in ROI Mask:", np.sum(roi_mask == 0))
+
                 print("ROI Mask generated...")
                 
         elif selected_shape_layer is None and self.roi_checkbox.isChecked(): #CHECK IF THIS IS THE RIGHT WAY TO HANDLE THIS
@@ -291,7 +246,6 @@ class MacroWidget(QWidget):
             # print("Original ROI Image :", original_ROI_image)
             result_roi = process_image(ROI_copy, code)
             
-            # print("Roi Result:", result_roi)
 
             if isinstance(result_roi,(list, np.ndarray)):
                  
@@ -300,14 +254,14 @@ class MacroWidget(QWidget):
                 if self.roi_checkbox.isChecked():
 
                     temp_image = deepcopy(image)
-                    # image_viewer.add_labels(image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text()+" Preview")
+
                     if len(temp_image.shape) == 3:
                         for stack in range(temp_image.shape[0]):
                             if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
-                                # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
+
                                 temp_image[stack] *= (1 - roi_mask).astype(data_dtype)  # Set the ROI area to 0
                                 temp_image[stack] = temp_image[stack]
-                                temp_image[stack] += result_roi[stack]  # Add the modified ROI
+                                temp_image[stack] += result_roi[stack]
 
                     elif len(temp_image.shape) == 2:
                         if self.image_has_changed(original_ROI_image, result_roi):
@@ -342,18 +296,18 @@ class MacroWidget(QWidget):
                 if self.roi_checkbox.isChecked():
 
                     temp_image = deepcopy(image)
-                    # image_viewer.add_labels(image, name=self.output_layer_text.findChild(QLineEdit, "OutputNameBox").text()+" Preview")
+
                     if len(temp_image.shape) == 3:
                         for stack in range(temp_image.shape[0]):
                             if self.image_has_changed(original_ROI_image[stack], result_roi[stack]):
-                                # print(stack, self.image_has_changed(temp_image[stack] * roi_mask, result_roi[stack]))
+
                                 temp_image[stack] *= (1 - roi_mask)  # Set the ROI area to 0
                                 temp_image[stack] = temp_image[stack].astype(data_dtype)
                                 temp_image[stack] += result_roi[stack]  # Add the modified ROI
 
                     elif len(temp_image.shape) == 2:
                         if self.image_has_changed(original_ROI_image, result_roi):
-                            # print("Label has changed in 2D")
+
                             temp_image *= (1 - roi_mask)
                             temp_image += result_roi
                     
@@ -384,11 +338,6 @@ class MacroWidget(QWidget):
         The final result of the intersection between the polygon and the image
         '''       
         new_polygon = deepcopy(polygon)
-
-        # print(f"Data Type of Polygon: f{type(polygon)}")
-        # print(f"Polygon:{polygon}")
-        # print(f"Image Shape: {image_shape}")
-        # print(f"Data Type of Image Shape: {type(image_shape)}")
 
         for vertex in new_polygon:
             # print(f"Vertex: {vertex}")
