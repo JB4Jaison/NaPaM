@@ -32,8 +32,12 @@ Contributions are very welcome. Tests can be run with [tox], please ensure
 the coverage at least stays the same before you submit a pull request.
 
 # Demo
-This is to demonstrate how the plugin can be used to run any script on an image.
-<video src="https://github.com/user-attachments/assets/24bebe67-8186-4189-8679-2148cbe26859" width="352" height="720"></video>
+<!-- This is to demonstrate how the plugin can be used to run any script on an image.
+<video controls autoplay loop src="https://github.com/user-attachments/assets/24bebe67-8186-4189-8679-2148cbe26859" width="352" height="720">
+ <p>Your browser doesn't support this video. Here is a <a href="https://github.com/user-attachments/assets/24bebe67-8186-4189-8679-2148cbe26859">link to the video</a> instead.</p>
+</video> -->
+
+![](https://github.com/JB4Jaison/NaPaM/raw/main/assets/napam_execution_demo.gif)
 
 ## License
 

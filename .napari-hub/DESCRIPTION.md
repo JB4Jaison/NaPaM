@@ -11,4 +11,4 @@ We have the console, so why do we need another plugin? The console can be clunky
 
 # Demo
 This is to demonstrate how the plugin can be used to run any script on an image.
-<video src="https://github.com/user-attachments/assets/24bebe67-8186-4189-8679-2148cbe26859" width="352" height="720"></video>
+<video loop src="https://github.com/user-attachments/assets/24bebe67-8186-4189-8679-2148cbe26859" width="352" height="720"></video>
